@@ -1,27 +1,24 @@
-# docker/backend/Dockerfile
-# COPY from https://www.cnblogs.com/leojazz/p/18817854
-
+# docker/backend/Dockerfile (优化版)
 # Stage 1: Build the application using Maven
-# 选择一个包含 Maven 和 JDK 的基础镜像 (根据 RuoYi 要求选择 JDK 版本, 如 8 或 11)
 FROM maven:3.8-openjdk-11 AS builder
 
-# 设置工作目录为 /app
 WORKDIR /app
 
-# 复制整个项目以便正确解析模块依赖关系
-COPY . .
+# 1. 复制 pom.xml 和子模块目录，【优先执行 install】
+# 这一步会编译所有模块，并将内部依赖 (ruoyi-common/framework/...) 安装到本地 Maven 仓库
+COPY pom.xml .
+COPY ruoyi-common ruoyi-common
+COPY ruoyi-framework ruoyi-framework
+COPY ruoyi-system ruoyi-system
+COPY ruoyi-quartz ruoyi-quartz
+COPY ruoyi-generator ruoyi-generator
+COPY ruoyi-admin ruoyi-admin
+RUN mvn clean install -DskipTests -B
 
-# 下载依赖 (如果 pom.xml 或模块定义未改变，此层会被缓存)
-RUN mvn dependency:go-offline -B
-
-# 复制所有源代码 (如果源代码改变，从这里开始的层会重新构建)
-# (上面已经复制了，这一步是为了确保所有文件都在)
-# 可以省略，因为上面已经分模块复制了
-
-# 执行 Maven 打包命令，跳过测试
-# -pl ruoyi-admin 指定只打包 ruoyi-admin 模块
-# -am 同时构建依赖的模块
-RUN mvn clean install -DskipTests
+# 2. 最终打包
+# 这一步会使用已经安装好的内部依赖和下载好的远程依赖来完成 ruoyi-admin 的打包
+# 使用 package 目标即可，无需 clean，因为前面已经 clean install 过了
+RUN mvn package -pl ruoyi-admin -am -DskipTests
 
 # Stage 2: Create the runtime image
 # 使用一个精简的 JRE 镜像

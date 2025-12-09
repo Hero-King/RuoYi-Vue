@@ -21,7 +21,7 @@ RUN mvn dependency:go-offline -B
 # 执行 Maven 打包命令，跳过测试
 # -pl ruoyi-admin 指定只打包 ruoyi-admin 模块
 # -am 同时构建依赖的模块
-RUN mvn clean package -pl ruoyi-admin -am -DskipTests
+RUN mvn clean install -DskipTests
 
 # Stage 2: Create the runtime image
 # 使用一个精简的 JRE 镜像

@@ -8,20 +8,10 @@ FROM maven:3.8-openjdk-11 AS builder
 # 设置工作目录为 /app
 WORKDIR /app
 
-# 复制 Maven 包装器和项目定义文件 (利用缓存)
-# 注意：这里的 pom.xml 和模块路径是相对于 Dockerfile 的位置调整的
-# 我们将在 Docker Compose 中设置 build context 为 RuoYi-Vue 根目录
-COPY pom.xml .
-COPY ruoyi-common ruoyi-common
-COPY ruoyi-framework ruoyi-framework
-COPY ruoyi-system ruoyi-system
-COPY ruoyi-quartz ruoyi-quartz
-COPY ruoyi-generator ruoyi-generator
-COPY ruoyi-admin ruoyi-admin
-# 如果有其他依赖模块，也需要复制
+# 复制整个项目以便正确解析模块依赖关系
+COPY . .
 
 # 下载依赖 (如果 pom.xml 或模块定义未改变，此层会被缓存)
-# 如果只需要构建 ruoyi-admin，可以优化此步骤，但完整构建更简单
 RUN mvn dependency:go-offline -B
 
 # 复制所有源代码 (如果源代码改变，从这里开始的层会重新构建)

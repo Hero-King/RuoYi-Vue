@@ -35,7 +35,7 @@ RUN mvn clean package -pl ruoyi-admin -am -DskipTests
 
 # Stage 2: Create the runtime image
 # 使用一个精简的 JRE 镜像
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:11-jre-alpine
 
 WORKDIR /app
 

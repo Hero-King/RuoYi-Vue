@@ -39,11 +39,4 @@ EXPOSE 8080
 ENTRYPOINT ["java", \
             "-Djava.security.egd=file:/dev/./urandom", \
             "-jar", \
-            "app.jar", \
-            "--spring.datasource.url=jdbc:mysql://${RUOYI_MYSQL_HOST:mysql}:${RUOYI_MYSQL_PORT:3306}/${RUOYI_MYSQL_DB:ry-vue}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai", \
-            "--spring.datasource.username=${RUOYI_MYSQL_USER:root}", \
-            "--spring.datasource.password=${RUOYI_MYSQL_PASS:password}", \
-            "--spring.redis.host=${RUOYI_REDIS_HOST:redis}", \
-            "--spring.redis.port=${RUOYI_REDIS_PORT:6379}", \
-            "--spring.redis.password=${RUOYI_REDIS_PASS:}" \
-           ]
+            "app.jar"]
